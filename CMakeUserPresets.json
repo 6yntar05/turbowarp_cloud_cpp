@@ -1,9 +1,0 @@
-{
-    "version": 4,
-    "vendor": {
-        "conan": {}
-    },
-    "include": [
-        "/home/cirno/Senko/Development/turbowarp_cloud_cpp/build/Release/generators/CMakePresets.json"
-    ]
-}
