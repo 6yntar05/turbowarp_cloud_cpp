@@ -20,6 +20,9 @@ class turbowarp_cloud_cppRecipe(ConanFile):
     # Sources are located in the same place as this recipe, copy them to the recipe
     exports_sources = "CMakeLists.txt", "src/*"
 
+    # Requires
+    requires = ("websocketpp/0.8.2", "boost/1.83.0")
+
     def layout(self):
         cmake_layout(self)
 

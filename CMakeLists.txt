@@ -3,7 +3,7 @@ project(turbowarp_cloud_cpp CXX)
 
 
 
-add_executable(turbowarp_cloud_cpp src/turbowarp_cloud_cpp.cpp src/main.cpp)
+add_executable(turbowarp_cloud_cpp src/CONAN_BUILD_TEST.cpp src/main.cpp)
 
 
 

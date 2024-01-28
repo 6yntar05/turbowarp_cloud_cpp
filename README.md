@@ -5,6 +5,7 @@ The turbowarp data server in C++
 There are none for yet
 
 ## Dependencies
+- For build: conan>=2, cmake>=3.15
 - `websocketpp`
 - `boost::asio`
 - \<TODO: Database\>
