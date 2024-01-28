@@ -7,13 +7,15 @@ There are none for yet
 ## Dependencies
 - `websocketpp`
 - `boost::asio`
+- \<TODO: Database\>
 
 ## Building
 - `git clone --recursive https://github.com/6yntar05/turbowarp_cloud_cpp`
 - `cd turbowarp_cloud_cpp`
 - `mkdir build && cd build`
-- `cmake .. && cmake --build . -j$(nproc)`
-- and run server help page: `./server --help`
+- `conan install .. --build=missing`
+- `conan build ..`
+- and run server help page: `./Release/turbowarp_cloud_cpp --help`
 
 ## Design
 Proto description presented in `protocol.md`<br>
