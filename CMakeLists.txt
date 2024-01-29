@@ -10,20 +10,20 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_executable(turbowarp_cloud_cpp src/CONAN_BUILD_TEST.cpp src/main.cpp)
 
 # Dependencies
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED)
 find_package(websocketpp REQUIRED)
 target_include_directories(turbowarp_cloud_cpp PRIVATE
         ${Boost_INCLUDE_DIRS}
         ${WEBSOCKETPP_INCLUDE_DIRS}
         ${CONAN_INCLUDE_DIRS}
         websocketpp::websocketpp
-        boost::boost)
+        Boost::boost)
 target_link_libraries(turbowarp_cloud_cpp PRIVATE
         ${Boost_LIBRARIES}
         ${WEBSOCKETPP_LIBRARIES}
         ${CONAN_LIBS}
         websocketpp::websocketpp
-        boost::boost)
+        Boost::boost)
 
 # Targets
 install(TARGETS turbowarp_cloud_cpp DESTINATION "."
