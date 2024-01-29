@@ -2,13 +2,41 @@
 #include <vector>
 #include <string>
 #include <boost/asio/io_context.hpp>
-#include <websocketpp/config/asio_client.hpp>
-#include <websocketpp/client.hpp>
+#include <websocketpp/config/asio.hpp>
+#include <websocketpp/server.hpp>
 
-// Объявление функции on_open
-void on_open(websocketpp::connection_hdl hdl) {
-    // Действия при открытии соединения
-    std::cout << "Connection opened" << std::endl;
+using Server = websocketpp::server<websocketpp::config::asio_tls>;
+using ConnectionHdl = websocketpp::connection_hdl;
+using SslContext = websocketpp::lib::asio::ssl::context;
+using websocketpp::lib::placeholders::_1;
+using websocketpp::lib::placeholders::_2;
+
+void on_message(Server* server, ConnectionHdl hdl,
+                websocketpp::config::asio::message_type::ptr msg) {
+    std::cout << "on_message: " << msg->get_payload() << std::endl;
+    server->send(hdl, msg->get_payload(), websocketpp::frame::opcode::text);
+}
+
+websocketpp::lib::shared_ptr<SslContext> on_tls_init(ConnectionHdl hdl) {
+    auto ctx = websocketpp::lib::make_shared<SslContext>(SslContext::sslv23);
+
+    //ctx->use_certificate_chain_file("cert.pem");
+    //ctx->use_private_key_file("key.pem", SslContext::pem);
+    return ctx;
+}
+
+void turn_off_logging(Server& server) {
+    server.clear_access_channels(websocketpp::log::alevel::all);
+    server.clear_error_channels(websocketpp::log::elevel::all);
+}
+
+void set_message_handler(Server& server) {
+    server.set_message_handler(
+        websocketpp::lib::bind(&on_message, &server, ::_1, ::_2));
+}
+
+void set_tls_init_handler(Server& server) {
+    server.set_tls_init_handler(websocketpp::lib::bind(&on_tls_init, ::_1));
 }
 
 int main() {
@@ -22,24 +50,14 @@ int main() {
     // Boost::asio init
     boost::asio::io_context io_context(1);
 
-    // Пример использования WebSocket из websocketpp
-    using websocketpp::lib::placeholders::_1;
-    using websocketpp::lib::placeholders::_2;
-    using websocketpp::lib::bind;
+    Server server;
+    turn_off_logging(server);
+    server.init_asio();
 
-    // Создаем endpoint
-    websocketpp::client<websocketpp::config::asio_tls_client> client;
+    set_message_handler(server);
+    set_tls_init_handler(server);
 
-    // Устанавливаем обработчик соединения
-    //client.set_open_handler(bind(&on_open, std::placeholders::_1));
-
-    // Создаем объект соединения
-    websocketpp::lib::error_code ec;
-    //auto con = client.get_connection("ws://echo.websocket.org", ec);
-
-    // Подключаемся
-    //client.connect(con);
-
-    // Запускаем цикл обработки
-    //client.run();
+    server.listen(30001);
+    server.start_accept();
+    server.run();
 }
