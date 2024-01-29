@@ -58,8 +58,8 @@ jobs:
       id: conan
       uses: turtlebrowser/get-conan@main
 
-    - name: Conan version
-      run: echo "${{ steps.conan.outputs.version }}"
+    - name: Conan prepare
+      run: conan profile detect --force && echo "${{ steps.conan.outputs.version }}"
 
     - name: Conan install
       run: mkdir build && cd build && conan install .. --build=missing

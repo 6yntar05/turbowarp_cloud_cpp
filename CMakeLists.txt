@@ -4,6 +4,7 @@ project(turbowarp_cloud_cpp CXX)
 # Properties
 set(CMAKE_CXX_STANDARD 23)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Sources
 add_executable(turbowarp_cloud_cpp src/CONAN_BUILD_TEST.cpp src/main.cpp)

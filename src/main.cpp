@@ -1,9 +1,10 @@
-#include "CONAN_BUILD_TEST.h"
 #include <vector>
 #include <string>
 #include <boost/asio/io_context.hpp>
 #include <websocketpp/config/asio.hpp>
 #include <websocketpp/server.hpp>
+
+#include "CONAN_BUILD_TEST.h"
 
 using Server = websocketpp::server<websocketpp::config::asio_tls>;
 using ConnectionHdl = websocketpp::connection_hdl;
