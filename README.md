@@ -14,9 +14,9 @@ There are none for yet
 - `git clone --recursive https://github.com/6yntar05/turbowarp_cloud_cpp`
 - `cd turbowarp_cloud_cpp`
 - `mkdir build && cd build`
-- `conan install .. --build=missing`
-- `conan build ..`
-- and run server help page: `./Release/turbowarp_cloud_cpp --help`
+- `conan install .. -vvv --build=missing --settings=build_type=Debug`
+- `conan build -vvv --build=missing --settings=build_type=Debug ..`
+- and run server help page: `./Debug/turbowarp_cloud_cpp --help`
 
 ## Design
 Proto description presented in `protocol.md`<br>

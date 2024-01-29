@@ -40,7 +40,3 @@ class turbowarp_cloud_cppRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
-
-    
-
-    
