@@ -2,31 +2,40 @@ cmake_minimum_required(VERSION 3.15)
 project(turbowarp_cloud_cpp CXX)
 
 # Properties
-set(CMAKE_CXX_STANDARD 23)
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set (CMAKE_CXX_STANDARD 23)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wno-unused-parameter")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+#set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+set (CMAKE_CXX_STANDARD_REQUIRED ON)
+set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Sources
-add_executable(turbowarp_cloud_cpp src/CONAN_BUILD_TEST.cpp src/main.cpp)
+file (GLOB_RECURSE SRCFILES "./src/*.cpp")
+add_executable (turbowarp_cloud_cpp ${SRCFILES})
+include_directories (AFTER SYSTEM ./src)
 
 # Dependencies
-find_package(Boost REQUIRED)
-find_package(websocketpp REQUIRED)
-target_include_directories(turbowarp_cloud_cpp PRIVATE
+find_package (Boost REQUIRED)
+find_package (websocketpp REQUIRED)
+find_package (libpqxx REQUIRED)
+target_include_directories (turbowarp_cloud_cpp PRIVATE
         ${Boost_INCLUDE_DIRS}
         ${WEBSOCKETPP_INCLUDE_DIRS}
         ${CONAN_INCLUDE_DIRS}
         websocketpp::websocketpp
-        Boost::boost)
-target_link_libraries(turbowarp_cloud_cpp PRIVATE
+        Boost::boost
+        libpqxx)
+target_link_libraries (turbowarp_cloud_cpp PRIVATE
         ${Boost_LIBRARIES}
         ${WEBSOCKETPP_LIBRARIES}
         ${CONAN_LIBS}
         websocketpp::websocketpp
-        Boost::boost)
+        Boost::boost
+        PostgreSQL::PostgreSQL
+        libpqxx::pqxx)
 
 # Targets
-install(TARGETS turbowarp_cloud_cpp DESTINATION "."
+install (TARGETS turbowarp_cloud_cpp DESTINATION "."
         RUNTIME DESTINATION bin
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib

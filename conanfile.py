@@ -21,7 +21,7 @@ class turbowarp_cloud_cppRecipe(ConanFile):
     exports_sources = "CMakeLists.txt", "src/*"
 
     # Requires
-    requires = ("websocketpp/0.8.2", "boost/1.83.0")
+    requires = ("websocketpp/0.8.2", "boost/1.83.0", "libpqxx/7.8.1")
 
     def layout(self):
         cmake_layout(self)
