@@ -1,5 +1,7 @@
 # turbowarp_cloud_cpp
-The turbowarp data server in C++ [![Conan + Cmake build](https://github.com/6yntar05/turbowarp_cloud_cpp/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/6yntar05/turbowarp_cloud_cpp/actions/workflows/cmake-multi-platform.yml)
+The turbowarp data server in C++ <br>
+[![LLVM/clang(Linux)](https://github.com/6yntar05/turbowarp_cloud_cpp/actions/workflows/conan-fast-check.yml/badge.svg)](https://github.com/6yntar05/turbowarp_cloud_cpp/actions/workflows/conan-fast-check.yml) <br>
+[![MSVC(Win32)+GCC(Linux)](https://github.com/6yntar05/turbowarp_cloud_cpp/actions/workflows/conan-multi-platform.yml/badge.svg)](https://github.com/6yntar05/turbowarp_cloud_cpp/actions/workflows/conan-multi-platform.yml)
 
 ## Features
 There are none for yet
