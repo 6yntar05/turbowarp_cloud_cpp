@@ -3,7 +3,6 @@
 #include <boost/asio/io_context.hpp>
 #include <websocketpp/config/asio.hpp>
 #include <websocketpp/server.hpp>
-#include "db/db.h"
 
 #include "CONAN_BUILD_TEST.h"
 
@@ -44,7 +43,6 @@ void set_tls_init_handler(Server& server) {
 int main() {
     // Просто тесты сборки
     turbowarp_cloud_cpp();
-    db::libraryTest();
 
     // Дальше приклюхи
     std::vector<std::string> vec;
