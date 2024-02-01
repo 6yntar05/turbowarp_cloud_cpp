@@ -1,7 +1,6 @@
 from conan import ConanFile
 from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
 
-
 class turbowarp_cloud_cppRecipe(ConanFile):
     name = "turbowarp_cloud_cpp"
     version = "0.0.1"
@@ -22,6 +21,10 @@ class turbowarp_cloud_cppRecipe(ConanFile):
 
     # Requires
     requires = ("websocketpp/0.8.2", "boost/1.83.0", "libpqxx/7.8.1")
+
+    @property
+    def _minimum_cpp_standard(self):
+        return 14
 
     def layout(self):
         cmake_layout(self)
