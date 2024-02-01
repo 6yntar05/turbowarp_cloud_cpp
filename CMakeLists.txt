@@ -6,7 +6,6 @@ set (CMAKE_CXX_STANDARD 23)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wno-unused-parameter")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Sources
