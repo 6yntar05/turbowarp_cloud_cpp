@@ -41,8 +41,8 @@ jobs:
       run: conan profile detect --force && echo "${{ steps.conan.outputs.version }}"
 
     - name: Conan install
-      run: conan install . --build=missing -vvv
+      run: conan install . --build=missing -vvv --settings compiler.cppstd=20 
 
     - name: Build
-      run: conan build -vvv --build=missing .
+      run: conan build -vvv --build=missing --settings compiler.cppstd=20 .
       

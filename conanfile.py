@@ -10,7 +10,7 @@ class turbowarp_cloud_cppRecipe(ConanFile):
     license = "MIT"
     author = "6yntar05"
     url = "https://github.com/6yntar05/turbowarp_cloud_cpp"
-    description = "The turbowarp data server in C++ "
+    description = "The turbowarp data server in C++"
     topics = ("turbowarp", "websocket", "asio")
 
     # Binary configuration
@@ -22,10 +22,6 @@ class turbowarp_cloud_cppRecipe(ConanFile):
     # Requires
     requires = ("websocketpp/0.8.2", "boost/1.83.0", "libpqxx/7.8.1")
 
-    @property
-    def _minimum_cpp_standard(self):
-        return 14
-
     def layout(self):
         cmake_layout(self)
 
@@ -34,6 +30,10 @@ class turbowarp_cloud_cppRecipe(ConanFile):
         deps.generate()
         tc = CMakeToolchain(self)
         tc.generate()
+        print(self.settings.compiler.cppstd)
+
+    def configure(self):
+        self.settings.compiler.cppstd = 20
 
     def build(self):
         cmake = CMake(self)
