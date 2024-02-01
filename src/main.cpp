@@ -41,8 +41,10 @@ void set_tls_init_handler(Server& server) {
 }
 
 int main() {
+    // Просто тесты сборки
     turbowarp_cloud_cpp();
 
+    // Дальше приклюхи
     std::vector<std::string> vec;
     vec.push_back("test_package");
 

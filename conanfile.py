@@ -1,7 +1,6 @@
 from conan import ConanFile
 from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
 
-
 class turbowarp_cloud_cppRecipe(ConanFile):
     name = "turbowarp_cloud_cpp"
     version = "0.0.1"
@@ -11,7 +10,7 @@ class turbowarp_cloud_cppRecipe(ConanFile):
     license = "MIT"
     author = "6yntar05"
     url = "https://github.com/6yntar05/turbowarp_cloud_cpp"
-    description = "The turbowarp data server in C++ "
+    description = "The turbowarp data server in C++"
     topics = ("turbowarp", "websocket", "asio")
 
     # Binary configuration
@@ -21,7 +20,7 @@ class turbowarp_cloud_cppRecipe(ConanFile):
     exports_sources = "CMakeLists.txt", "src/*"
 
     # Requires
-    requires = ("websocketpp/0.8.2", "boost/1.83.0")
+    requires = ("websocketpp/0.8.2", "boost/1.83.0", "libpqxx/7.8.1")
 
     def layout(self):
         cmake_layout(self)
@@ -31,6 +30,10 @@ class turbowarp_cloud_cppRecipe(ConanFile):
         deps.generate()
         tc = CMakeToolchain(self)
         tc.generate()
+        print(self.settings.compiler.cppstd)
+
+    def configure(self):
+        self.settings.compiler.cppstd = 20
 
     def build(self):
         cmake = CMake(self)
