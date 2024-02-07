@@ -5,35 +5,36 @@
 
 using namespace web_soket;
 
-// Если не инициализировать config будет ошибка :с
 /* --- Статическая инициалицая ---*/
 WebsocketServer Server::websocket_server;
-ServerConfig Server::config = ServerConfig();
 
-bool Server::init(ServerConfig& server_config) {
-    config = server_config;
-    websocket_server.init_asio();
+Server::Server(ServerConfig& config) {
+    this->config = config;
+}
+
+bool Server::init() {
+    this->websocket_server.init_asio();
 
     return true;
 }
 
 bool Server::run() {
     try {
-        websocket_server.listen(config.get_port());
+        this->websocket_server.listen(this->config.get_port());
     } catch(websocketpp::exception const &e) {
         std::cerr << e.what() << std::endl;
         return false;
     }
 
     websocketpp::lib::error_code ec;
-    websocket_server.start_accept(ec);
+    this->websocket_server.start_accept(ec);
     if (ec) {
         std::cerr << ec.message() << std::endl;
         return false;
     }
 
     try {
-        websocket_server.run();
+        this->websocket_server.run();
     } catch(websocketpp::exception const &e) {
         std::cerr << e.what() << std::endl;
         return false;
@@ -45,13 +46,17 @@ bool Server::run() {
 // TODO
 void Server::stop() {}
 
+WebsocketServer& Server::get_websoket_server() {
+    return websocket_server;
+}
+
 ServerConfig& Server::get_config() {
     return config;
 }
 
-void Server::turn_off_logging() {
-    websocket_server.clear_access_channels(websocketpp::log::alevel::all);
-    websocket_server.clear_error_channels(websocketpp::log::elevel::all);
+void web_soket::turn_off_logging(Server& server) {
+    server.get_websoket_server().clear_access_channels(websocketpp::log::alevel::all);
+    server.get_websoket_server().clear_error_channels(websocketpp::log::elevel::all);
 }
 
 void on_message(WebsocketServer* server, ConnectionHdl hdl,
@@ -60,9 +65,9 @@ void on_message(WebsocketServer* server, ConnectionHdl hdl,
     server->send(hdl, msg->get_payload(), websocketpp::frame::opcode::text);
 }
 
-void Server::set_message_handler() {
-    websocket_server.set_message_handler(
-        websocketpp::lib::bind(&on_message, &websocket_server, ::_1, ::_2));
+void web_soket::set_message_handler(Server& server) {
+    server.get_websoket_server().set_message_handler(
+        websocketpp::lib::bind(&on_message, &server.get_websoket_server(), ::_1, ::_2));
 }
 
 websocketpp::lib::shared_ptr<SslContext> on_tls_init(ConnectionHdl hdl) {
@@ -73,6 +78,6 @@ websocketpp::lib::shared_ptr<SslContext> on_tls_init(ConnectionHdl hdl) {
     return ctx;
 }
 
-void Server::set_tls_init_handler() {
-    websocket_server.set_tls_init_handler(websocketpp::lib::bind(&on_tls_init, ::_1));
+void web_soket::set_tls_init_handler(Server& server) {
+    server.get_websoket_server().set_tls_init_handler(websocketpp::lib::bind(&on_tls_init, ::_1));
 }
