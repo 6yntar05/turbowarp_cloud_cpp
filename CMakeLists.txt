@@ -12,6 +12,9 @@ endif ()
 #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# todo: do it properly
+add_compile_options(/bigobj)
+
 # Sources
 file (GLOB_RECURSE SRCFILES "./src/*.cpp")
 add_executable (turbowarp_cloud_cpp ${SRCFILES})
