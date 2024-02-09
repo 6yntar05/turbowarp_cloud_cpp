@@ -2,9 +2,11 @@
 #define server_beast_hpp
 
 #include <boost/asio.hpp>
+#include <boost/asio/ssl/context.hpp>
 #include <boost/beast.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
+#include <boost/beast/websocket/ssl.hpp>
 #include <boost/asio/strand.hpp>
 #include <iostream>
 #include <thread>
@@ -24,15 +26,17 @@ namespace web_socket {
 
     // Echoes back all received WebSocket messages
     class session : public std::enable_shared_from_this<session> {
-        websocket::stream<beast::tcp_stream> ws_;
+        websocket::stream<net::ssl::stream<beast::tcp_stream>> ws_;
         beast::flat_buffer buffer_;
 
         public:
             // Take ownership of the socket
-            explicit session(tcp::socket&& socket) : ws_(std::move(socket)) {}
+            explicit session(tcp::socket&& socket, net::ssl::context& ctx);
 
             // Start the asynchronous operation
             void run();
+            void on_run();
+            void on_handshake(beast::error_code ec);
             void on_accept(beast::error_code ec);
             void do_read();
             void on_read(beast::error_code ec, std::size_t bytes_transferred);
@@ -45,9 +49,10 @@ namespace web_socket {
     class listener : public std::enable_shared_from_this<listener> {
         net::io_context& ioc_;
         tcp::acceptor acceptor_;
+        net::ssl::context& ctx_;
 
         public:
-            listener(net::io_context& ioc, tcp::endpoint endpoint);
+            listener(net::io_context& ioc, tcp::endpoint endpoint, net::ssl::context& ctx);
 
             // Start accepting incoming connections
             void run();

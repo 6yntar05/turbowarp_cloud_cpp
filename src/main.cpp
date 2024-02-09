@@ -2,12 +2,12 @@
 
 #include "CONAN_BUILD_TEST.h"
 
-#include "web_socket/server_config.hpp"
+// #include "web_socket/server_config.hpp"
 // #include "web_socket/server.hpp"
 
 #include "web_socket/server_beast.hpp"
 // #include "web_socket/test.hpp"
-
+#include "web_socket/test.hpp"
 
 int main() {
     // Просто тесты сборки
@@ -20,7 +20,7 @@ int main() {
     turbowarp_cloud_cpp_print_vector(vec);
 
     // Boost::asio init
-    boost::asio::io_context io_context(1);
+    // boost::asio::io_context io_context(1);
 
     // Можно поменять имя и порт
     // web_soket::ServerConfig server_config;
@@ -59,8 +59,11 @@ int main() {
     // The io_context is required for all I/O
     net::io_context ioc{ threads };
 
+    net::ssl::context ctx(net::ssl::context::tlsv13);
+    load_server_certificate(ctx);
+
     // Create and launch a listening port
-    std::make_shared<web_socket::listener>(ioc, tcp::endpoint{ address, port })->run();
+    std::make_shared<web_socket::listener>(ioc, tcp::endpoint{ address, port }, ctx)->run();
 
     // Run the I/O service on the requested number of threads
     std::vector<std::thread> v;

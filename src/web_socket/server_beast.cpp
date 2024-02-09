@@ -6,8 +6,68 @@ void web_socket::fail(beast::error_code ec, char const* what) {
     std::cerr << what << ": " << ec.message() << std::endl;
 }
 
+session::session(tcp::socket&& socket, net::ssl::context& ctx) : ws_(std::move(socket), ctx) {}
+
 // Start the asynchronous operation
+// void session::run() {
+//     // Set suggested timeout settings for the websocket
+//     ws_.set_option(
+//         websocket::stream_base::timeout::suggested(
+//             beast::role_type::server));
+//
+//     // Set a decorator to change the Server of the handshake
+//     ws_.set_option(websocket::stream_base::decorator(
+//         [](websocket::response_type& res) {
+//             res.set(http::field::server,
+//                 std::string("web Iot server") +
+//                 " 1.0");
+//         }));
+//     
+//     beast::flat_buffer buffer;
+//
+//     // Read the HTTP request ourselves
+//     http::request<http::string_body> req;
+//     http::read(ws_.next_layer(), buffer, req);
+//
+//     // See if its a WebSocket upgrade request
+//     if (websocket::is_upgrade(req)) {
+//         // Construct the stream, transferring ownership of the socket
+//         //stream<tcp_stream> ws(std::move(sock));
+//
+//         // Clients SHOULD NOT begin sending WebSocket
+//         // frames until the server has provided a response.
+//         BOOST_ASSERT(buffer.size() == 0);
+//
+//         // Accept the upgrade request
+//         ws_.async_accept(req,
+//             beast::bind_front_handler(
+//                 &session::on_accept,
+//                 shared_from_this()));
+//
+//         std::cout << "new connection: " << req.target() << std::endl;
+//     }
+// }
+// Get on the correct executor
 void session::run() {
+    // We need to be executing within a strand to perform async operations
+    // on the I/O objects in this session. Although not strictly necessary
+    // for single-threaded contexts, this example code is written to be
+    // thread-safe by default.
+    net::dispatch(ws_.get_executor(), beast::bind_front_handler(&session::on_run, shared_from_this()));
+}
+
+void session::on_run() {
+    ws_.next_layer().async_handshake(
+        net::ssl::stream_base::server,
+        beast::bind_front_handler(
+            &session::on_handshake, shared_from_this()
+    ));
+}
+
+void session::on_handshake(beast::error_code ec) {
+    if (ec)
+        return fail(ec, "handshake");
+
     // Set suggested timeout settings for the websocket
     ws_.set_option(
         websocket::stream_base::timeout::suggested(
@@ -19,8 +79,8 @@ void session::run() {
             res.set(http::field::server,
                 std::string("web Iot server") +
                 " 1.0");
-        }));
-    
+    }));
+
     beast::flat_buffer buffer;
 
     // Read the HTTP request ourselves
@@ -103,7 +163,7 @@ void session::on_write(beast::error_code ec, std::size_t bytes_transferred) {
 //------------------------------------------------------------------------------
 
 // Accepts incoming connections and launches the sessions
-listener::listener(net::io_context& ioc, tcp::endpoint endpoint) : ioc_(ioc), acceptor_(ioc) {
+listener::listener(net::io_context& ioc, tcp::endpoint endpoint, net::ssl::context& ctx) : ioc_(ioc), acceptor_(ioc), ctx_(ctx) {
         beast::error_code ec;
 
         // Open the acceptor
@@ -154,7 +214,7 @@ void listener::on_accept(beast::error_code ec, tcp::socket socket) {
         fail(ec, "accept");
     } else {
         // Create the session and run it
-        std::make_shared<session>(std::move(socket))->run();
+        std::make_shared<session>(std::move(socket), ctx_)->run();
     }
 
     // Accept another connection
