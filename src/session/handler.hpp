@@ -6,26 +6,32 @@
 
 namespace session {
     namespace handler_details {
+
         template<typename T>
         concept TupleTypePack = requires(T tuple) {
+            // in theory, it should break down there is T not std::tuple
             typename std::tuple_size<T>::type;
         };
 
+        namespace details {
+            template<typename Context, TupleTypePack ArgsPack, typename Result>
+            struct handle_func_type_builder {
+            private:
+                handle_func_type_builder() = delete;
+
+                template<typename... Args>
+                using _handle_func_type = std::function<Result(Context, Args...)>;
+
+                template<typename... Args>
+                static auto unpack(const std::tuple<Args...> &) -> _handle_func_type<Args...>;
+
+            public:
+                using handle_func_type = decltype(unpack(std::declval<ArgsPack>()));
+            };
+        }
+
         template<typename Context, TupleTypePack ArgsPack, typename Result>
-        struct handle_func_type_builder {
-            handle_func_type_builder() = delete;
-
-            template<typename... Args>
-            using _handle_func_type = std::function<Result(Context, Args...)>;
-
-            template<typename... Args>
-            static _handle_func_type<Args...> unpack(const std::tuple<Args...> &) {}
-
-            using handle_func_type = decltype(unpack(*static_cast<ArgsPack *>(nullptr)));
-        };
-
-        template<typename Context, TupleTypePack ArgsPack, typename Result>
-        using handle_func_type = typename handle_func_type_builder<Context, ArgsPack, Result>::handle_func_type;
+        using handle_func_type = typename details::handle_func_type_builder<Context, ArgsPack, Result>::handle_func_type;
     }
 
     namespace default_handlers {
@@ -48,8 +54,8 @@ namespace session {
             }
         };
 
-        template<size_t... arg_numbers>
-        struct just_say_args_by_number {
+        template<size_t... ArgsNumbers>
+        struct just_say_args_by_numbers {
             std::string message;
 
             template<typename... Args>
@@ -57,28 +63,11 @@ namespace session {
                 return [message = std::move(message)](Args &&... args) {
                     std::cout << message;
                     auto t = std::tuple(std::forward<Args>(args)...);
-                    ((std::cout << std::get<arg_numbers>(t)), ...);
+                    ((std::cout << std::get<ArgsNumbers>(t)), ...);
                     std::cout << std::endl;
                 };
             }
         };
-
-//        template <size_t arg_number, typename T = void>
-//        struct just_say_arg {
-//            std::string message;
-//
-//            template <typename... Args>
-//            /*implicit*/ operator std::function<void(Args...)>() && {
-//                return [message = std::move(message)](Args... args) {
-//                    std::cout << message;
-//                    std::cout << std::get<arg_number>(std::tuple(args...));
-//                    std::cout << std::endl;
-//
-//                    static_assert(std::is_same_v<T, void> || std::is_convertible_v<decltype(std::get<arg_number>(std::tuple(std::forward<Args>(args)...))), T>,
-//                                 "wrong type");
-//                };
-//            }
-//        };
 
         template<typename ArgType, size_t Number = 0>
         struct just_say_arg {
@@ -92,11 +81,12 @@ namespace session {
                     size_t i = 0;
                     ((handle_arg(i, args)), ...);
 
-                    if (i <= Number) {
-                        std::cout << "<just_say_arg: no found arg>";
-                    }
-
                     std::cout << std::endl;
+
+                    static_assert(
+                            Number < (std::is_convertible_v<Args, ArgType> + ...),
+                            "there are fewer such types in arguments"
+                    );
                 };
             }
 

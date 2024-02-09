@@ -10,7 +10,7 @@ namespace session {
     public:
         struct handlers {
             struct context {
-                const shared_ptr<session> owner;
+                const shared_ptr<session> &owner;
 
             };
 
@@ -44,14 +44,14 @@ namespace session {
 
         ////// fields
     private:
-        websocket::stream<ssl::stream<tcp::socket>> _ws;
-        beast::flat_buffer _buffer;
-        handlers _handlers;
+        websocket::stream<ssl::stream<tcp::socket>> ws_;
+        beast::flat_buffer buffer_;
+        handlers handlers_;
 
         ////// public methods
     public:
         explicit session(tcp::socket socket, ssl::context &ssl_context, handlers handlers)
-                : _ws(std::move(socket), ssl_context), _handlers(std::move(handlers)) {
+                : ws_(std::move(socket), ssl_context), handlers_(std::move(handlers)) {
         }
 
         // make lazy?
@@ -84,19 +84,19 @@ namespace session {
         ////// inner methods
     private:
         void do_handshake(std::optional<decltype(handlers::on_handshake)> handler = {}) {
-            _ws.next_layer().async_handshake(
+            ws_.next_layer().async_handshake(
                     ssl::stream_base::server,
                     [self = shared_from_this(), handler](boost::system::error_code ec) {
                         handlers::context context{self};
 
                         if (ec) {
-                            self->_handlers.on_handshake.failure(context, ec);
+                            self->handlers_.on_handshake.failure(context, ec);
                             if (handler.has_value())
                                 handler->failure(context, ec);
                             return;
                         }
 
-                        self->_handlers.on_handshake.success(context);
+                        self->handlers_.on_handshake.success(context);
                         if (handler.has_value())
                             handler->success(context);
                     }
@@ -104,59 +104,59 @@ namespace session {
         }
 
         void do_accept(std::optional<decltype(handlers::on_accept)> handler = {}) {
-            _ws.async_accept(
+            ws_.async_accept(
                     [self = shared_from_this(), handler](boost::system::error_code ec) {
                         handlers::context context{self};
 
                         if (ec) {
-                            self->_handlers.on_accept.failure(context, ec);
+                            self->handlers_.on_accept.failure(context, ec);
                             if (handler.has_value())
                                 handler->failure(context, ec);
                             return;
                         }
 
-                        self->_handlers.on_accept.success(context);
+                        self->handlers_.on_accept.success(context);
                         if (handler.has_value())
                             handler->success(context);
                     });
         }
 
         void do_read(std::optional<decltype(handlers::on_read)> handler = {}) {
-            _ws.async_read(
-                    _buffer,
+            ws_.async_read(
+                    buffer_,
                     [self = shared_from_this(), handler = std::move(handler)]
                             (const beast::error_code &ec, std::size_t bytes_transferred) {
                         handlers::context context{self};
 
                         if (ec) {
-                            self->_handlers.on_read.failure(context, bytes_transferred, ec);
+                            self->handlers_.on_read.failure(context, bytes_transferred, ec);
                             if (handler.has_value())
                                 handler->failure(context, bytes_transferred, ec);
                             return;
                         }
 
-                        self->_handlers.on_read.success(context, bytes_transferred, self->_buffer.data());
+                        self->handlers_.on_read.success(context, bytes_transferred, self->buffer_.data());
                         if (handler.has_value())
-                            handler->success(context, bytes_transferred, self->_buffer.data());
+                            handler->success(context, bytes_transferred, self->buffer_.data());
                     }
             );
         }
 
         void do_write(const asio::const_buffer &data, std::optional<decltype(handlers::on_write)> handler = {}) {
-            _ws.async_write(
+            ws_.async_write(
                     data,
                     [self = shared_from_this(), handler = std::move(handler)]
                             (const beast::error_code &ec, std::size_t bytes_transferred) {
                         handlers::context context{self};
 
                         if (ec) {
-                            self->_handlers.on_write.failure(context, bytes_transferred, ec);
+                            self->handlers_.on_write.failure(context, bytes_transferred, ec);
                             if (handler.has_value())
                                 handler->failure(context, bytes_transferred, ec);
                             return;
                         }
 
-                        self->_handlers.on_write.success(context, bytes_transferred);
+                        self->handlers_.on_write.success(context, bytes_transferred);
                         if (handler.has_value())
                             handler->success(context, bytes_transferred);
                     }

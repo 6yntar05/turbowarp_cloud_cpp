@@ -12,7 +12,7 @@ namespace session {
         ////// types
     public:
         struct config_t {
-            tcp::endpoint endpoint; // = {net::ip::make_address("..."), <port number>}
+            tcp::endpoint endpoint;
             ssl::context &ssl_context;
         };
 
