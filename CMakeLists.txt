@@ -13,7 +13,9 @@ endif ()
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # todo: do it properly
-add_compile_options(/bigobj)
+if (MSVC)
+    add_compile_options(/bigobj)
+endif ()
 
 # Sources
 file (GLOB_RECURSE SRCFILES "./src/*.cpp")
