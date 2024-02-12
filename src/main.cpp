@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "utils.h"
+#include "utils/utils.h"
 
 utils::ServerOptions options;
 
