@@ -1,5 +1,4 @@
-#ifndef UTILS_HPP
-#define UTILS_HPP
+#pragma once
 
 #include <string>
 
@@ -17,5 +16,3 @@ struct ServerOptions
 void parseCommandLine(int argc, char* argv[], ServerOptions& options);
 
 } // namespace utils
-
-#endif // UTILS_HPP
