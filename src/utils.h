@@ -11,6 +11,7 @@ struct ServerOptions
     int port;
     std::string username;
     std::string password;
+    std::string database;
 };
 
 void parseCommandLine(int argc, char* argv[], ServerOptions& options);

@@ -14,6 +14,7 @@ void parseCommandLine(int argc, char* argv[], ServerOptions& options) {
         ("port,p", po::value<int>(&options.port)->default_value(12309), "Server port")
         ("username,u", po::value<std::string>(&options.username)->default_value("postgres"), "Database username")
         ("password,P", po::value<std::string>(&options.password)->default_value(""), "Database password");
+        ("db,d", po::value<std::string>(&options.password)->default_value("postgres"), "Database name");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
