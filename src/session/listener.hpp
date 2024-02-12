@@ -29,46 +29,16 @@ namespace session {
         ////// public methods
     public:
 
-        explicit listener(asio::io_context &ioc, const tcp::endpoint &endpoint, handlers handlers)
-                : ioc_(ioc), acceptor_(ioc, endpoint), endpoint_(endpoint),
-                  handlers_(std::move(handlers)) {}
+        explicit listener(asio::io_context &ioc, const tcp::endpoint &endpoint, handlers handlers);
 
-        void start() {
-            if (!acceptor_.is_open()) {
-                acceptor_.open(endpoint_.protocol());
-            }
+        void start();
 
-            do_accept();
-        }
-
-        void stop() {
-            if (acceptor_.is_open()) {
-                acceptor_.close();
-            }
-        }
+        void stop();
 
         ////// inner methods
     private:
 
-        void do_accept() {
-            acceptor_.async_accept(
-                    [self = shared_from_this()](const beast::error_code &ec, tcp::socket socket) {
-                        if (ec == asio::error::operation_aborted) {
-                            // when listener.stop()
-                            return;
-                        }
-                        handlers::context context{self};
-
-                        if (ec) {
-                            self->handlers_.on_accept.failure(context, ec);
-                            return;
-                        }
-
-                        self->handlers_.on_accept.success(context, std::move(socket));
-
-                        self->do_accept();
-                    });
-        }
+        void do_accept();
 
     };
 };
