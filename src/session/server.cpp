@@ -37,10 +37,18 @@ namespace session {
                 .on_read = decltype(session::handlers::on_read){
                         .success = [](auto context, auto bytes_transferred, auto data) {
                             std::cout << "receive data" << std::endl;
-                            context.owner->read();
+                            context.owner->send(data);
                         },
                         .failure = default_handlers::just_say_arg<beast::error_code>("read error: "),
-                }
+                },
+
+                .on_write = decltype(session::handlers::on_write){
+                    .success = [](auto context, auto bytes_transferred){
+                        std::cout << "sent data" << std::endl;
+                        context.owner->read();
+                    },
+                    .failure = default_handlers::just_say_arg<beast::error_code>("write error: "),
+                },
         };
     }
 }
