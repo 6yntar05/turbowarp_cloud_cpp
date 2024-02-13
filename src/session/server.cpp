@@ -2,11 +2,11 @@
 
 namespace session {
 
-    server::server(asio::io_context &ioc, server::config_t config) : ioc(ioc), config(std::move(config)) {}
+    server::server(server::config_t config) : config(std::move(config)) {}
 
     void server::run() {
         if (!_listener) {
-            _listener = std::make_shared<listener>(ioc, config.endpoint, listener_handlers());
+            _listener = std::make_shared<listener>(config.io_context, config.endpoint, listener_handlers());
         }
         _listener->start();
     }
@@ -43,11 +43,11 @@ namespace session {
                 },
 
                 .on_write = decltype(session::handlers::on_write){
-                    .success = [](auto context, auto bytes_transferred){
-                        std::cout << "sent data" << std::endl;
-                        context.owner->read();
-                    },
-                    .failure = default_handlers::just_say_arg<beast::error_code>("write error: "),
+                        .success = [](auto context, auto bytes_transferred) {
+                            std::cout << "sent data" << std::endl;
+                            context.owner->read();
+                        },
+                        .failure = default_handlers::just_say_arg<beast::error_code>("write error: "),
                 },
         };
     }

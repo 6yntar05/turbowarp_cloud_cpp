@@ -10,7 +10,7 @@
 
 namespace session {
 
-    void configure_ssl(ssl::context &ctx){
+    void configure_ssl(ssl::context &ctx) {
         /*
             The certificate was generated from bash on Ubuntu (OpenSSL 1.1.1f) using:
 
@@ -84,8 +84,7 @@ namespace session {
 
         ctx.set_password_callback(
                 [](std::size_t,
-                   boost::asio::ssl::context_base::password_purpose)
-                {
+                   boost::asio::ssl::context_base::password_purpose) {
                     return "test";
                 });
 
@@ -165,9 +164,10 @@ namespace session {
         boost::asio::ssl::context ctx{boost::asio::ssl::context::tlsv13};
         configure_ssl(ctx);
 
-        auto server_ = std::make_shared<server>(io_context, server::config_t{
+        auto server_ = std::make_shared<server>(server::config_t{
                 .endpoint = {asio::ip::make_address("127.0.0.1"), 8080},
-                .ssl_context = ctx,
+                .io_context = io_context,
+                .ssl_context = std::move(ctx),
         });
 
         server_->run();
