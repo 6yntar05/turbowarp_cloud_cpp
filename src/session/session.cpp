@@ -31,6 +31,10 @@ namespace session {
         do_write(asio::buffer(message), std::move(handler));
     }
 
+    void session::send(const asio::const_buffer& data, std::optional<decltype(handlers::on_write)> handler) {
+        do_write(data, std::move(handler));
+    }
+
     void session::do_handshake(std::optional<decltype(handlers::on_handshake)> handler) {
         ws_.next_layer().async_handshake(
                 ssl::stream_base::server,
@@ -70,6 +74,7 @@ namespace session {
     }
 
     void session::do_read(std::optional<decltype(handlers::on_read)> handler) {
+        buffer_.clear();
         ws_.async_read(
                 buffer_,
                 [self = shared_from_this(), handler = std::move(handler)]
@@ -91,8 +96,10 @@ namespace session {
     }
 
     void session::do_write(const asio::const_buffer &data, std::optional<decltype(handlers::on_write)> handler) {
+        buffer_.clear();
+        buffer_.commit(asio::buffer_copy(buffer_.prepare(asio::buffer_size(data)), data));
         ws_.async_write(
-                data,
+                buffer_.data(),
                 [self = shared_from_this(), handler = std::move(handler)]
                         (const beast::error_code &ec, std::size_t bytes_transferred) {
                     handlers::context context{self};

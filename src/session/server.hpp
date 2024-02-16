@@ -13,18 +13,18 @@ namespace session {
     public:
         struct config_t {
             tcp::endpoint endpoint;
-            ssl::context &ssl_context;
+            asio::io_context &io_context;
+            ssl::context ssl_context;
         };
 
         ////// fields
     private:
-        asio::io_context &ioc;
         std::shared_ptr<listener> _listener = nullptr;
         config_t config;
 
         ////// public methods
     public:
-        server(asio::io_context &ioc, config_t config);
+        explicit server(config_t config);
 
         void run();
 

@@ -62,6 +62,8 @@ namespace session {
 
         void send(std::string message, std::optional<decltype(handlers::on_write)> handler = {});
 
+        void send(const asio::const_buffer& data, std::optional<decltype(handlers::on_write)> handler = {});
+
         ////// inner methods
     private:
         void do_handshake(std::optional<decltype(handlers::on_handshake)> handler = {});
