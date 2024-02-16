@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 project(turbowarp_cloud_cpp CXX)
 
 # Properties
-set (CMAKE_CXX_STANDARD 20)
+set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wno-unused-parameter -fdiagnostics-color=always")
@@ -19,20 +19,14 @@ include_directories (AFTER SYSTEM ./src)
 
 # Dependencies
 find_package (Boost REQUIRED)
-find_package (websocketpp REQUIRED)
 find_package (libpqxx REQUIRED)
 target_include_directories (turbowarp_cloud_cpp PRIVATE
         ${Boost_INCLUDE_DIRS}
-        ${WEBSOCKETPP_INCLUDE_DIRS}
         ${CONAN_INCLUDE_DIRS}
-        websocketpp::websocketpp
-        Boost::boost
-        libpqxx)
+        Boost::boost)
 target_link_libraries (turbowarp_cloud_cpp PRIVATE
         ${Boost_LIBRARIES}
-        ${WEBSOCKETPP_LIBRARIES}
         ${CONAN_LIBS}
-        websocketpp::websocketpp
         Boost::boost
         PostgreSQL::PostgreSQL
         libpqxx::pqxx)
