@@ -11,7 +11,7 @@ class turbowarp_cloud_cppRecipe(ConanFile):
     author = "6yntar05"
     url = "https://github.com/6yntar05/turbowarp_cloud_cpp"
     description = "The turbowarp data server in C++"
-    topics = ("turbowarp", "websocket", "asio")
+    topics = ("turbowarp", "asio", "beast")
 
     # Binary configuration
     settings = "os", "compiler", "build_type", "arch"
@@ -20,7 +20,7 @@ class turbowarp_cloud_cppRecipe(ConanFile):
     exports_sources = "CMakeLists.txt", "src/*"
 
     # Requires
-    requires = ("websocketpp/0.8.2", "boost/1.83.0", "libpqxx/7.8.1")
+    requires = ("boost/1.83.0", "libpqxx/7.8.1")
 
     def layout(self):
         cmake_layout(self)
@@ -33,7 +33,7 @@ class turbowarp_cloud_cppRecipe(ConanFile):
         print(self.settings.compiler.cppstd)
 
     def configure(self):
-        self.settings.compiler.cppstd = 20
+        self.settings.compiler.cppstd = 17
 
     def build(self):
         cmake = CMake(self)
