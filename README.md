@@ -8,16 +8,13 @@ There are none for yet
 
 ## Dependencies
 - For build: conan>=2, cmake>=3.15
-- `websocketpp`
-- `boost::asio`
-- \<TODO: Database\>
 
 ## Building
 - `git clone --recursive https://github.com/6yntar05/turbowarp_cloud_cpp`
 - `cd turbowarp_cloud_cpp`
 - `mkdir build && cd build`
-- `conan install .. -vvv --build=missing --settings=build_type=Debug --settings compiler.cppstd=20`
-- `conan build -vvv --build=missing --settings=build_type=Debug --settings compiler.cppstd=20 ..`
+- `conan install .. -vvv --build=missing --settings=build_type=Debug --settings compiler.cppstd=23`
+- `conan build -vvv --build=missing --settings=build_type=Debug --settings compiler.cppstd=23 ..`
 - and run server help page: `./Debug/turbowarp_cloud_cpp --help`
 
 ## Design

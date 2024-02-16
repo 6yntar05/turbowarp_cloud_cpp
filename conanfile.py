@@ -20,7 +20,7 @@ class turbowarp_cloud_cppRecipe(ConanFile):
     exports_sources = "CMakeLists.txt", "src/*"
 
     # Requires
-    requires = ("boost/1.83.0", "libpqxx/7.8.1")
+    requires = ("boost/1.83.0", "libpqxx/7.8.1", "openssl/3.2.1")
 
     def layout(self):
         cmake_layout(self)
@@ -33,7 +33,7 @@ class turbowarp_cloud_cppRecipe(ConanFile):
         print(self.settings.compiler.cppstd)
 
     def configure(self):
-        self.settings.compiler.cppstd = 17
+        self.settings.compiler.cppstd = 23
 
     def build(self):
         cmake = CMake(self)
