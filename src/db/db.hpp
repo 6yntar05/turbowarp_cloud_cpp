@@ -67,25 +67,7 @@ namespace journal {
     const std::string sqliteString = "; DROP TABLE *;";  // We do a little trolling...
 }  // namespace journal
 
-constexpr std::string genNamesVec(std::string source, bool ignoreFirst = true) {
-    std::string ret = "(";
-
-    bool waitForComma = false;
-    for (size_t i = 0; i < source.size(); i++) {
-        if (source.at(i) == ',') {
-            waitForComma = false;
-            if (!ignoreFirst) ret += ", ";
-            ignoreFirst = false;
-        } else if (source.at(i) == ' ') {
-            if (!waitForComma) waitForComma = true;
-        } else {
-            if (!waitForComma && !ignoreFirst) ret += source.at(i);
-        }
-    }
-    ret += ")";
-    
-    return ret;
-};
+std::string genNamesVec(std::string source, bool ignoreFirst = true);
 
 }  // namespace dataRows
 

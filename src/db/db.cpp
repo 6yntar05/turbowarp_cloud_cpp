@@ -85,4 +85,24 @@ std::vector<dataRows::service::row> db::serviceRead(size_t count) {
     return this->backend->serviceRead(count);
 }
 
+std::string dataRows::genNamesVec(std::string source, bool ignoreFirst) {
+    std::string ret = "(";
+
+    bool waitForComma = false;
+    for (size_t i = 0; i < source.size(); i++) {
+        if (source.at(i) == ',') {
+            waitForComma = false;
+            if (!ignoreFirst) ret += ", ";
+            ignoreFirst = false;
+        } else if (source.at(i) == ' ') {
+            if (!waitForComma) waitForComma = true;
+        } else {
+            if (!waitForComma && !ignoreFirst) ret += source.at(i);
+        }
+    }
+    ret += ")";
+    
+    return ret;
+};
+
 }  // namespace db
