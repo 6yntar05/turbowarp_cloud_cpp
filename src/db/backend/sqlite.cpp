@@ -20,6 +20,6 @@ impl::impl(const std::string user, const std::string passwd, const std::string d
 
 impl::~impl() {}
 
-}  // namespace postgres
+}  // namespace sqlite
 
 }  // namespace db

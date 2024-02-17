@@ -33,38 +33,39 @@ credetials getDefaults(backends::available backend);
 
 namespace dataRows {
 
-// template <typename T> constexpr std::string genDataString(::db::backends::available backend, T dataStruct) { return {}; }
+// template <typename T> constexpr std::string genDataString(::db::backends::available backend, T
+// dataStruct) { return {}; }
 
 namespace service {
-    enum types { exceptionEvent = 0, connectEvent = 1, disconnectEvent = 2, broadcastEvent = 3 };
-    
-    struct row {
-        uint32_t id = 0; // will be generated automaticly
-        types type = exceptionEvent;
-        std::string data = {};
-    };
-    const std::string postgresString =
-        "id int GENERATED ALWAYS AS IDENTITY,"
-        "type smallint,"
-        "data varchar (255) ";
+enum types { exceptionEvent = 0, connectEvent = 1, disconnectEvent = 2, broadcastEvent = 3 };
 
-    const std::string sqliteString = "; DROP TABLE *;";  // We do a little trolling...
+struct row {
+    uint32_t id = 0;  // will be generated automaticly
+    types type = exceptionEvent;
+    std::string data = {};
+};
+const std::string postgresString =
+    "id int GENERATED ALWAYS AS IDENTITY,"
+    "type smallint,"
+    "data varchar (255) ";
+
+const std::string sqliteString = "; DROP TABLE *;";  // We do a little trolling...
 }  // namespace service
 
 namespace journal {
-    struct row {
-        uint32_t id = 0; // will be generated automaticly
-        std::string datetime;
-        std::string metadata;
-        std::vector<unsigned char> image; // ((((((((((((((
-    };
-    const std::string postgresString =
-        "id int GENERATED ALWAYS AS IDENTITY,"
-        "datetime varchar (32),"
-        "metadata varchar (255),"
-        "image bytea DEFAULT NULL";
+struct row {
+    uint32_t id = 0;  // will be generated automaticly
+    std::string datetime;
+    std::string metadata;
+    std::vector<unsigned char> image;  // ((((((((((((((
+};
+const std::string postgresString =
+    "id int GENERATED ALWAYS AS IDENTITY,"
+    "datetime varchar (32),"
+    "metadata varchar (255),"
+    "image bytea DEFAULT NULL";
 
-    const std::string sqliteString = "; DROP TABLE *;";  // We do a little trolling...
+const std::string sqliteString = "; DROP TABLE *;";  // We do a little trolling...
 }  // namespace journal
 
 std::string genNamesVec(std::string source, bool ignoreFirst = true);
@@ -73,7 +74,7 @@ std::string genNamesVec(std::string source, bool ignoreFirst = true);
 
 // Base class of backend-specific implementation
 class impl {
-   public:
+public:
     virtual ~impl() = default;
     virtual void close(){};
     virtual void setup(){};
@@ -94,11 +95,11 @@ class impl {
 
 // Main interface
 class db {
-   private:
+private:
     std::shared_ptr<impl> backend = std::make_shared<impl>();
     credetials login;
 
-   public:
+public:
     db(const backends::available backend = backends::none, const std::string user = "",
        const std::string passwd = "", const std::string dbname = "bigeye", addr addr = {});
 

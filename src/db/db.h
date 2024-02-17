@@ -7,8 +7,6 @@
 
 namespace db {
 
-void libraryTest() {
-    auto test = pqxx::connection();
-}
+void libraryTest() { auto test = pqxx::connection(); }
 
-} // namespace db
+}  // namespace db

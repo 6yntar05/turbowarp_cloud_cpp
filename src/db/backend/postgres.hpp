@@ -15,10 +15,10 @@ const std::string default_port = "5432";
 credetials getDefaults();
 
 class impl : public ::db::impl {
-   private:
+private:
     std::unique_ptr<pqxx::connection> C;
 
-   public:
+public:
     ~impl();
     impl(const std::string user, const std::string passwd, const std::string dbname, addr addr);
     void close() override;

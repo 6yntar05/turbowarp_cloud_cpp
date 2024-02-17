@@ -1,22 +1,33 @@
-#include <cstdlib>
-#include <iostream>
 #include <spdlog/spdlog.h>
 
-#include "utils/utils.h"
-#include "session/test_main.hpp"
+#include <cstdlib>
+#include <iostream>
 
-utils::ServerOptions options;
+#include "session/server.hpp"
+#include "session/server_builder.hpp"
+#include "session/standard_headers.hpp"
+#include "utils/utils.hpp"
 
 int main(int argc, char* argv[]) {
+    utils::ServerOptions options;
+
     spdlog::set_level(spdlog::level::debug);
     utils::parseCommandLine(argc, argv, options);
-    
-    spdlog::debug("Host: {}", options.host);
-    spdlog::debug("Port: {}", options.port);
-    spdlog::debug("Username: {}", options.username);
-    spdlog::debug("Passowrd: {}", options.password);
+    {
+        spdlog::debug("Server Host: {}", options.wshost);
+        spdlog::debug("Server Port: {}", options.wsport);
 
-    //minimal_vs();
-    session::normal_ws();
+        spdlog::debug("DBHost: {}", options.dbhost);
+        spdlog::debug("DBPort: {}", options.dbport);
+        spdlog::debug("DBUsername: {}", options.dbusername);
+        spdlog::debug("DBPassowrd: {}", options.dbpassword);
+    }
+
+    boost::asio::io_context io_context(1);
+    session::server::server_ptr server =
+        session::build_server(io_context, {asio::ip::make_address(options.wshost), options.wsport});
+    server->run();
+    io_context.run();
+
     return 0;
 }

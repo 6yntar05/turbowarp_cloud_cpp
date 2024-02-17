@@ -10,7 +10,7 @@ namespace excepts {
 
 // Usage: throw excepts::error(...)
 class error : public std::exception {
-   private:
+private:
     const string msg;
     const string file;
     const string func;
@@ -18,7 +18,7 @@ class error : public std::exception {
     string what_string;
     char* what_msg;
 
-   public:
+public:
     error(const string msg = "Runtime error!", const string file = "", const string func = "",
           const string info = "");
 

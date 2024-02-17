@@ -3,17 +3,16 @@
 #include <charconv>
 #include <cstddef>
 #include <db/db.hpp>
+#include <iostream>
+#include <pqxx/array>
+#include <pqxx/binarystring>
+#include <pqxx/blob>
 #include <pqxx/field>
 #include <pqxx/pqxx>
 #include <pqxx/strconv.hxx>
-#include <pqxx/util>
-#include <pqxx/binarystring>
-#include <pqxx/array>
-#include <pqxx/blob>
-#include <pqxx/field>
 #include <pqxx/strconv>
+#include <pqxx/util>
 #include <string>
-#include <iostream>
 
 #include "excepts.hpp"
 
@@ -37,7 +36,8 @@ impl::impl(const std::string user, const std::string passwd, const std::string d
                                                      " password = " + passwd +
                                                      " host = " + addr.ip + " port = " + addr.port);
         if (!this->C->is_open()) throw excepts::error("Can't open database");
-        //ui::msg("Opened database successfully: " + static_cast<std::string>(this->C->dbname())); //TODO: spdlog
+        // ui::msg("Opened database successfully: " + static_cast<std::string>(this->C->dbname()));
+        // //TODO: spdlog
 
     } catch (const std::exception& e) {
         throw excepts::error(e.what());
@@ -68,10 +68,12 @@ void impl::setup() {
         }
     }
 
-    this->C->prepare("serviceWrite",
-        "INSERT INTO service " + dataRows::genNamesVec(dataRows::service::postgresString) + " VALUES ($1, $2);");
-    this->C->prepare("journalWrite",
-        "INSERT INTO journal " + dataRows::genNamesVec(dataRows::journal::postgresString) + " VALUES ($1, $2, $3);");
+    this->C->prepare("serviceWrite", "INSERT INTO service " +
+                                         dataRows::genNamesVec(dataRows::service::postgresString) +
+                                         " VALUES ($1, $2);");
+    this->C->prepare("journalWrite", "INSERT INTO journal " +
+                                         dataRows::genNamesVec(dataRows::journal::postgresString) +
+                                         " VALUES ($1, $2, $3);");
 }
 
 size_t impl::getRowsCount(std::string table) {
@@ -105,14 +107,14 @@ std::vector<service::row> impl::serviceRead(size_t count) {
 // Journal table:
 void impl::journalWrite(journal::row dataRow) {
     pqxx::work W{*this->C};
-    W.exec_prepared("journalWrite", dataRow.datetime, dataRow.metadata, pqxx::binary_cast(dataRow.image));
+    W.exec_prepared("journalWrite", dataRow.datetime, dataRow.metadata,
+                    pqxx::binary_cast(dataRow.image));
     W.commit();
 }
 
 std::string hexToASCII(std::string hex) {
     string ascii = "";
-    for (size_t i = 2; i < hex.length(); i += 2)
-    {
+    for (size_t i = 2; i < hex.length(); i += 2) {
         string part = hex.substr(i, 2);
         char ch = stoul(part, nullptr, 16);
 
@@ -124,7 +126,8 @@ std::string hexToASCII(std::string hex) {
 std::vector<journal::row> impl::journalRead(size_t count) {
     std::vector<journal::row> ret;
     pqxx::work W{*C};
-    auto response = W.exec_n(count, "SELECT * FROM journal LIMIT " + W.esc(std::to_string(count)) + ";");
+    auto response =
+        W.exec_n(count, "SELECT * FROM journal LIMIT " + W.esc(std::to_string(count)) + ";");
 
     for (auto i : response) {
         journal::row row;
@@ -133,7 +136,7 @@ std::vector<journal::row> impl::journalRead(size_t count) {
         row.metadata = i.at(2).c_str();
         auto x = hexToASCII(i.at(3).c_str());
 
-        std::vector<unsigned char> y { x.c_str(), x.c_str()+x.size() };
+        std::vector<unsigned char> y{x.c_str(), x.c_str() + x.size()};
         row.image = y;
         ret.push_back(row);
     }
