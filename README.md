@@ -13,8 +13,8 @@ There are none for yet
 - `git clone --recursive https://github.com/6yntar05/turbowarp_cloud_cpp`
 - `cd turbowarp_cloud_cpp`
 - `mkdir build && cd build`
-- `conan install .. -vvv --build=missing --settings=build_type=Debug --settings compiler.cppstd=23`
-- `conan build -vvv --build=missing --settings=build_type=Debug --settings compiler.cppstd=23 ..`
+- `conan install .. -vvv --build=missing --settings=build_type=Debug --settings compiler.cppstd=20`
+- `conan build -vvv --build=missing --settings=build_type=Debug --settings compiler.cppstd=20 ..`
 - and run server help page: `./Debug/turbowarp_cloud_cpp --help`
 
 ## Design

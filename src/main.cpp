@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 #include "utils/utils.h"
 #include "session/test_main.hpp"
@@ -7,11 +8,13 @@
 utils::ServerOptions options;
 
 int main(int argc, char* argv[]) {
+    spdlog::set_level(spdlog::level::debug);
     utils::parseCommandLine(argc, argv, options);
-    std::cout << "Host:" << options.host << std::endl;
-    std::cout << "Port:" << options.port << std::endl;
-    std::cout << "Username:" << options.username << std::endl;
-    std::cout << "Passowrd:" << options.password << std::endl;
+    
+    spdlog::debug("Host: {}", options.host);
+    spdlog::debug("Port: {}", options.port);
+    spdlog::debug("Username: {}", options.username);
+    spdlog::debug("Passowrd: {}", options.password);
 
     //minimal_vs();
     session::normal_ws();

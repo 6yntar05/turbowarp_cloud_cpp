@@ -26,22 +26,24 @@ include_directories (AFTER SYSTEM ./src)
 find_package (Boost REQUIRED)
 find_package (libpqxx REQUIRED)
 find_package (OpenSSL REQUIRED)
+find_package(spdlog)
 target_include_directories (turbowarp_cloud_cpp PRIVATE
         ${Boost_INCLUDE_DIRS}
         ${CONAN_INCLUDE_DIRS}
         ${libpqxx_INCLUDE_DIRS}
-        Boost::boost)
+        Boost::boost
+        libpqxx::pqxx
+        OpenSSL::SSL
+        spdlog::spdlog)
 target_link_libraries (turbowarp_cloud_cpp PRIVATE
         ${Boost_LIBRARIES}
         ${CONAN_LIBS}
         ${libpqxx_LIBRARIES}
         Boost::boost
         PostgreSQL::PostgreSQL
-        libpq::pq
-        libpq::pgcommon
-        libpq::pgport
         libpqxx::pqxx
-        OpenSSL::SSL)
+        OpenSSL::SSL
+        spdlog::spdlog)
 
 # Targets
 install (TARGETS turbowarp_cloud_cpp DESTINATION "."
