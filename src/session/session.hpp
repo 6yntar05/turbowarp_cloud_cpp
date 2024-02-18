@@ -50,7 +50,7 @@ public:
     // make lazy?
     void handshake(std::optional<decltype(handlers::on_handshake)> handler = {});
 
-    void read();
+    asio::const_buffer read();
 
     void read(handler<handlers::context, std::tuple<std::string>,
                       decltype(handlers::on_read)::FailureArgsPack>
@@ -67,7 +67,7 @@ private:
 
     void do_accept(std::optional<decltype(handlers::on_accept)> handler = {});
 
-    void do_read(std::optional<decltype(handlers::on_read)> handler = {});
+    asio::const_buffer do_read(std::optional<decltype(handlers::on_read)> handler = {});
 
     void do_write(const asio::const_buffer &data,
                   std::optional<decltype(handlers::on_write)> handler = {});

@@ -32,7 +32,10 @@ session::handlers server::session_handlers() {
     return session::handlers{
         .on_accept =
             decltype(session::handlers::on_accept){
-                .success = [](auto context) { context.owner->read(); },
+                .success = [](auto context) {
+                    //context
+                    context.owner->read();
+                },
                 .failure = default_handlers::just_say_arg<beast::error_code>("accept error: "),
             },
 
@@ -40,7 +43,7 @@ session::handlers server::session_handlers() {
             decltype(session::handlers::on_read){
                 .success =
                     [](auto context, auto bytes_transferred, auto data) {
-                        spdlog::debug("receive data: {}", data.data());
+                        spdlog::debug("send data: {}", data.data());
                         context.owner->send(data);
                     },
                 .failure = default_handlers::just_say_arg<beast::error_code>("read error: "),
@@ -50,8 +53,8 @@ session::handlers server::session_handlers() {
             decltype(session::handlers::on_write){
                 .success =
                     [](auto context, auto bytes_transferred) {
-                        spdlog::debug("sent data");
-                        context.owner->read();
+                        asio::const_buffer buf = context.owner->read();
+                        spdlog::debug("read data: {}", buf.data());
                     },
                 .failure = default_handlers::just_say_arg<beast::error_code>("write error: "),
             },

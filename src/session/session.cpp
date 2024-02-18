@@ -13,7 +13,7 @@ void session::handshake(std::optional<decltype(handlers::on_handshake)> handler)
     });
 }
 
-void session::read() { do_read(); }
+asio::const_buffer session::read() { return do_read(); }
 
 void session::read(handler<handlers::context, std::tuple<std::string>,
                            decltype(handlers::on_read)::FailureArgsPack>
@@ -65,7 +65,7 @@ void session::do_accept(std::optional<decltype(handlers::on_accept)> handler) {
     });
 }
 
-void session::do_read(std::optional<decltype(handlers::on_read)> handler) {
+asio::const_buffer session::do_read(std::optional<decltype(handlers::on_read)> handler) {
     buffer_.clear();
     ws_.async_read(buffer_, [self = shared_from_this(), handler = std::move(handler)](
                                 const beast::error_code &ec, std::size_t bytes_transferred) {
@@ -80,6 +80,8 @@ void session::do_read(std::optional<decltype(handlers::on_read)> handler) {
         self->handlers_.on_read.success(context, bytes_transferred, self->buffer_.data());
         if (handler.has_value()) handler->success(context, bytes_transferred, self->buffer_.data());
     });
+
+    return buffer_.data();
 }
 
 void session::do_write(const asio::const_buffer &data,

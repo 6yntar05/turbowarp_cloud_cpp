@@ -4,7 +4,7 @@ namespace session {
 
 listener::listener(asio::io_context &ioc, const tcp::endpoint &endpoint,
                    listener::handlers handlers)
-    : ioc_(ioc), acceptor_(ioc, endpoint), endpoint_(endpoint), handlers_(std::move(handlers)) {}
+    : ioc_(ioc), endpoint_(endpoint), acceptor_(ioc, endpoint), handlers_(std::move(handlers)) {}
 
 void listener::start() {
     if (!acceptor_.is_open()) {
