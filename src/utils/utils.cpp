@@ -12,7 +12,7 @@ void parseCommandLine(int argc, char* argv[], ServerOptions& options) {
         ("help,h", "Produce help message")
 
         ("host,H", po::value<std::string>(&options.wshost)->default_value("0.0.0.0"), "Server host")
-        ("port,P", po::value<int>(&options.wsport)->default_value(8080), "Server port")
+        ("port,P", po::value<int>(&options.wsport)->default_value(443), "Server port")
 
         ("dbhost,d", po::value<std::string>(&options.dbhost)->default_value("127.0.0.1"), "Database host")
         ("dbport,t", po::value<int>(&options.dbport)->default_value(5432), "Database port")

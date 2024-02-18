@@ -1,4 +1,7 @@
 build
+cert*
+privkey*
+*.pem
 
 # Conan specific
 **/test_package/build/

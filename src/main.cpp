@@ -25,7 +25,8 @@ int main(int argc, char* argv[]) {
     boost::asio::io_context io_context(1);
     session::server::server_ptr server = session::build_server(
         io_context,
-        {asio::ip::make_address(options.wshost), boost::asio::ip::port_type(options.wsport)});
+        {asio::ip::make_address(options.wshost), boost::asio::ip::port_type(options.wsport)},
+        "./cert", "./privkey");
     server->run();
     io_context.run();
 
