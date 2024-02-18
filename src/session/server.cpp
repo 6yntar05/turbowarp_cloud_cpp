@@ -43,7 +43,7 @@ session::handlers server::session_handlers() {
             decltype(session::handlers::on_read){
                 .success =
                     [](auto context, auto bytes_transferred, auto data) {
-                        spdlog::debug("send data: {}", data.data());
+                        spdlog::debug("read data: {}", std::string(static_cast<const char*>(data.data()), data.size()));
                         context.owner->send(data);
                     },
                 .failure = default_handlers::just_say_arg<beast::error_code>("read error: "),
@@ -53,8 +53,8 @@ session::handlers server::session_handlers() {
             decltype(session::handlers::on_write){
                 .success =
                     [](auto context, auto bytes_transferred) {
-                        asio::const_buffer buf = context.owner->read();
-                        spdlog::debug("read data: {}", buf.data());
+                        asio::const_buffer data = context.owner->read();
+                        spdlog::debug("send data: {}", std::string(static_cast<const char*>(data.data()), data.size()));
                     },
                 .failure = default_handlers::just_say_arg<beast::error_code>("write error: "),
             },
