@@ -1,17 +1,15 @@
 import ssl
 import time
+import sys
 
 import websocket # install websocket-client, not websocket
 
-ws_url = "wss://localhost:8080"
-
 ssl_context = ssl.create_default_context()
 ssl_context.check_hostname = False
-ssl_context.verify_mode = ssl.CERT_NONE
 
 try:
-    ws = websocket.WebSocket(sslopt={"ssl_context": ssl_context, "cert_reqs": ssl.CERT_NONE})
-    ws.connect(ws_url)
+    ws = websocket.WebSocket(sslopt={"ssl_context": ssl_context})
+    ws.connect(sys.argv[1])
     print("Подключено к серверу")
 
     ws.send("hi")
