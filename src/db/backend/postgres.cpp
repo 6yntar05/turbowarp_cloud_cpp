@@ -1,9 +1,10 @@
 #include "db/backend/postgres.hpp"
 
+#include <spdlog/spdlog.h>
+
 #include <charconv>
 #include <cstddef>
 #include <db/db.hpp>
-#include <iostream>
 #include <pqxx/array>
 #include <pqxx/binarystring>
 #include <pqxx/blob>
@@ -13,8 +14,6 @@
 #include <pqxx/strconv>
 #include <pqxx/util>
 #include <string>
-
-#include "excepts.hpp"
 
 namespace db {
 
@@ -35,12 +34,14 @@ impl::impl(const std::string user, const std::string passwd, const std::string d
         this->C = std::make_unique<pqxx::connection>("dbname = " + dbname + " user = " + user +
                                                      " password = " + passwd +
                                                      " host = " + addr.ip + " port = " + addr.port);
-        if (!this->C->is_open()) throw excepts::error("Can't open database");
-        // ui::msg("Opened database successfully: " + static_cast<std::string>(this->C->dbname()));
-        // //TODO: spdlog
+        if (!this->C->is_open()) {
+            spdlog::error("Can't open database");
+            return;
+        }
+        spdlog::info("Opened database successfully: " + static_cast<std::string>(this->C->dbname()));
 
     } catch (const std::exception& e) {
-        throw excepts::error(e.what());
+        spdlog::error("Exception: {}", e.what());
     }
 }
 
@@ -113,9 +114,9 @@ void impl::journalWrite(journal::row dataRow) {
 }
 
 std::string hexToASCII(std::string hex) {
-    string ascii = "";
+    std::string ascii = "";
     for (size_t i = 2; i < hex.length(); i += 2) {
-        string part = hex.substr(i, 2);
+        std::string part = hex.substr(i, 2);
         char ch = stoul(part, nullptr, 16);
 
         ascii += ch;

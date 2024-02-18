@@ -1,5 +1,7 @@
 #pragma once
 
+#include <spdlog/spdlog.h>
+
 #include <iostream>
 #include <memory>
 #include <string>
@@ -85,8 +87,7 @@ public:
 
     // Journal table
     virtual void journalWrite(dataRows::journal::row i) {
-        std::cout << "[ " << std::to_string(i.id) << " | " << i.datetime << " | " << i.metadata
-                  << i.image.size() << " ]\n";
+        spdlog::info("[ {} | {} | {} | {} ]", std::to_string(i.id), i.datetime, i.metadata, i.image.size());
     };
     virtual std::vector<dataRows::journal::row> journalRead(size_t count) { return {}; };
 

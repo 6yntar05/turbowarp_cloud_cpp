@@ -1,10 +1,9 @@
-#include "db/db.hpp"
-
 #include <memory>
+#include <spdlog/spdlog.h>
 
+#include "db/db.hpp"
 #include "db/backend/postgres.hpp"
 #include "db/backend/sqlite.hpp"
-#include "excepts.hpp"
 
 namespace db {
 
@@ -53,8 +52,9 @@ void db::connect() {
 
     switch (_backend) {
         case backends::sqlite:
-            throw excepts::error("SQLite backend is not implemented");
-            this->backend = std::make_shared<impl>();  // REPLACE
+            spdlog::critical("SQLite backend is not implemented");
+            std::terminate();
+            this->backend = std::make_shared<impl>();
             break;
 
         case backends::postgres: {

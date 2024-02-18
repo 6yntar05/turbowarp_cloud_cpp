@@ -116,9 +116,9 @@ void minimal_session(tcp::socket socket, ssl::context &ctx) {
         }
     } catch (boost::system::system_error const &se) {
         if (se.code() != websocket::error::closed)
-            std::cerr << "Error: " << se.code().message() << std::endl;
+            spdlog::error("Error: {}", se.code().message());
     } catch (std::exception const &e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
+        spdlog::critical("Exception: {}", e.what());
     }
 }
 
@@ -143,7 +143,7 @@ void minimal_ws() {
         }
 
     } catch (std::exception const &e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
+        spdlog::critical("Exception: {}", e.what());
     }
 }
 
