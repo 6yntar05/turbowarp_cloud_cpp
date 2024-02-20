@@ -1,4 +1,5 @@
 #include "session/server.hpp"
+#include "session/turbowarp/api.hpp"
 
 namespace session {
 
@@ -43,8 +44,10 @@ session::handlers server::session_handlers() {
             decltype(session::handlers::on_read){
                 .success =
                     [](auto context, auto bytes_transferred, auto data) {
-                        spdlog::debug("read data: {}", std::string(static_cast<const char*>(data.data()), data.size()));
-                        context.owner->send(data);
+                        auto s_data = std::string(static_cast<const char*>(data.data()), data.size());
+                        spdlog::debug("read data: {}", s_data);
+                        auto answer = turbowarp::api::analize_data(s_data);
+                        context.owner->send(answer);
                     },
                 .failure = default_handlers::just_say_arg<beast::error_code>("read error: "),
             },
