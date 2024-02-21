@@ -1,6 +1,7 @@
 import ssl
 import time
 import sys
+import json
 
 import websocket # install websocket-client, not websocket
 
@@ -12,10 +13,12 @@ try:
     ws.connect(sys.argv[1])
     print("Подключено к серверу")
 
-    ws.send("hi")
+    data = json.dumps(['foo', {'bar': ('baz', None, 1.0, 2)}])
+    # data = "asd"
+    ws.send(data)
     while(True):
         m = ws.recv()
-        print(m)
+        print(json.loads(m))
         time.sleep(5)
         ws.send(m)
 
