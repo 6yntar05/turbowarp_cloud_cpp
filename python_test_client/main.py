@@ -14,6 +14,7 @@ try:
     print("Подключено к серверу")
 
     data = json.dumps(['foo', {'bar': ('baz', None, 1.0, 2)}])
+    # data = json.dumps({'method': 'asd', 'qwe': 'rty'})
     # data = "asd"
     ws.send(data)
     while(True):
