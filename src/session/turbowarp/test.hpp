@@ -10,15 +10,15 @@
 
 namespace turbowarp {
 void test_requests() {
-    method::AvailableMethods::methods = {
-        {"handshake", std::make_shared<method::Handshake>()},
-        {"set", std::make_shared<method::Set>()},
-        {"create", std::make_shared<method::Create>()},
-        {"rename", std::make_shared<method::Rename>()},
-        {"delete", std::make_shared<method::Delete>()},
-    };
+    // method::AvailableMethods::methods = {
+    //     {"handshake", std::make_shared<method::Handshake>()},
+    //     {"set", std::make_shared<method::Set>()},
+    //     {"create", std::make_shared<method::Create>()},
+    //     {"rename", std::make_shared<method::Rename>()},
+    //     {"delete", std::make_shared<method::Delete>()},
+    // };
     // or
-    // method::AvailableMethods::base_init();
+    method::AvailableMethods::base_init();
 
     {
         boost::json::value jv = {

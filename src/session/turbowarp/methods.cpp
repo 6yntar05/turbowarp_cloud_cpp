@@ -9,7 +9,7 @@ BaseMethod::BaseMethod(std::vector<std::string> const &params) { this->params = 
 BaseMethod::BaseMethod(const BaseMethod &method) { this->params = method.params; }
 
 void AvailableMethods::base_init() {
-    method::AvailableMethods::methods = {
+    AvailableMethods::methods = {
         {"handshake", std::make_shared<method::Handshake>()},
         {"set", std::make_shared<method::Set>()},
         {"create", std::make_shared<method::Create>()},
@@ -44,6 +44,6 @@ turbowarp::Result<std::string> turbowarp::method::value_to_method(boost::json::v
     return Error<std::string>(turbowarp::JsonParser::error_message("Generic Error", 4000));
 }
 
-BaseMethod *turbowarp::method::find_method(std::string const &method) {
-    return turbowarp::method::AvailableMethods::methods.at(method).get();
+std::shared_ptr<BaseMethod> turbowarp::method::find_method(std::string const &method) {
+    return turbowarp::method::AvailableMethods::methods.at(method);
 }

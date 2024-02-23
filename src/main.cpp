@@ -6,6 +6,7 @@
 #include "session/server_builder.hpp"
 #include "session/standard_headers.hpp"
 #include "session/turbowarp/methods.hpp"
+#include "session/turbowarp/test.hpp"
 #include "utils/utils.hpp"
 
 int main(int argc, char* argv[]) {
@@ -23,16 +24,16 @@ int main(int argc, char* argv[]) {
         spdlog::debug("DBPassowrd: {}", options.dbpassword);
     }
 
-    boost::asio::io_context io_context(1);
-    session::server::server_ptr server = session::build_server(
-        io_context,
-        {asio::ip::make_address(options.wshost), boost::asio::ip::port_type(options.wsport)},
-        "./cert", "./privkey");
-    server->run();
-    io_context.run();
+    // boost::asio::io_context io_context(1);
+    // session::server::server_ptr server = session::build_server(
+    //     io_context,
+    //     {asio::ip::make_address(options.wshost), boost::asio::ip::port_type(options.wsport)},
+    //     "./cert", "./privkey");
+    // server->run();
+    // io_context.run();
 
-    // turbowarp::test_requests();
-    turbowarp::method::AvailableMethods::base_init();
+    // turbowarp::method::AvailableMethods::base_init();
+    turbowarp::test_requests();
 
     return 0;
 }

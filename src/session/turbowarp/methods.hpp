@@ -55,7 +55,7 @@ struct Delete : BaseMethod {
 };
 
 bool is_valid(std::vector<std::string> const &params, boost::json::value const &value);
-BaseMethod *find_method(std::string const &method);
+std::shared_ptr<BaseMethod> find_method(std::string const &method);
 Result<std::string> value_to_method(boost::json::value const &value);
 }  // namespace method
 }  // namespace turbowarp
