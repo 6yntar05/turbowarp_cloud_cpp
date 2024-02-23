@@ -6,7 +6,6 @@
 #include "session/server_builder.hpp"
 #include "session/standard_headers.hpp"
 #include "session/turbowarp/methods.hpp"
-#include "session/turbowarp/test.hpp"
 #include "utils/utils.hpp"
 
 int main(int argc, char* argv[]) {
