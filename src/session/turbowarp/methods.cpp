@@ -1,7 +1,5 @@
 #include "session/turbowarp/methods.hpp"
 
-#include <iostream>
-
 #include "session/turbowarp/json_parser.hpp"
 
 using namespace turbowarp::method;

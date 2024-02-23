@@ -1,3 +1,5 @@
+#include <spdlog/spdlog.h>
+
 #include "session/turbowarp/methods.hpp"
 
 using namespace turbowarp::method;
@@ -9,9 +11,8 @@ using namespace turbowarp::method;
 
 turbowarp::Result<std::string> Handshake::custom_behavior(boost::json::value const &value) {
     for (auto param : this->params) {
-        std::cout << param << " : " << value.at(param) << std::endl;
+        spdlog::debug("{} : {}", param, boost::json::value_to<std::string>(value.at(param)));
     }
-    std::cout << std::endl;
 
     if (false) {
         boost::json::value jv = {
@@ -32,9 +33,8 @@ turbowarp::Result<std::string> Handshake::custom_behavior(boost::json::value con
 
 turbowarp::Result<std::string> Set::custom_behavior(boost::json::value const &value) {
     for (auto param : this->params) {
-        std::cout << param << " : " << value.at(param) << std::endl;
+        spdlog::debug("{} : {}", param, boost::json::value_to<std::string>(value.at(param)));
     }
-    std::cout << std::endl;
 
     if (false) {
         return Error<std::string>(JsonParser::error_message("Generic Error", 4000));
@@ -45,9 +45,8 @@ turbowarp::Result<std::string> Set::custom_behavior(boost::json::value const &va
 
 turbowarp::Result<std::string> Create::custom_behavior(boost::json::value const &value) {
     for (auto param : this->params) {
-        std::cout << param << " : " << value.at(param) << std::endl;
+        spdlog::debug("{} : {}", param, boost::json::value_to<std::string>(value.at(param)));
     }
-    std::cout << std::endl;
 
     if (false) {
         return Error<std::string>(JsonParser::error_message("Generic Error", 4000));
@@ -58,9 +57,8 @@ turbowarp::Result<std::string> Create::custom_behavior(boost::json::value const 
 
 turbowarp::Result<std::string> Rename::custom_behavior(boost::json::value const &value) {
     for (auto param : this->params) {
-        std::cout << param << " : " << value.at(param) << std::endl;
+        spdlog::debug("{} : {}", param, boost::json::value_to<std::string>(value.at(param)));
     }
-    std::cout << std::endl;
 
     if (false) {
         return Error<std::string>(JsonParser::error_message("Generic Error", 4000));
@@ -71,9 +69,8 @@ turbowarp::Result<std::string> Rename::custom_behavior(boost::json::value const 
 
 turbowarp::Result<std::string> Delete::custom_behavior(boost::json::value const &value) {
     for (auto param : this->params) {
-        std::cout << param << " : " << value.at(param) << std::endl;
+        spdlog::debug("{} : {}", param, boost::json::value_to<std::string>(value.at(param)));
     }
-    std::cout << std::endl;
 
     if (false) {
         return Error<std::string>(JsonParser::error_message("Generic Error", 4000));
