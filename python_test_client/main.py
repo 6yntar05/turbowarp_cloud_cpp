@@ -1,6 +1,7 @@
 import ssl
 import time
 import sys
+import json
 
 import websocket # install websocket-client, not websocket
 
@@ -12,12 +13,16 @@ try:
     ws.connect(sys.argv[1])
     print("Подключено к серверу")
 
-    ws.send("hi")
-    while(True):
-        m = ws.recv()
-        print(m)
-        time.sleep(5)
-        ws.send(m)
+    # data = json.dumps(['foo', {'bar': ('baz', None, 1.0, 2)}])
+    # data = json.dumps({'method': 'handshake', 'project_id': 'qwe', 'user': 'asd'})
+    data = json.dumps({'method': 'handshake', 'asd': 'qwe', 'user': 'asd'})
+    # data = "asd"
+    ws.send(data)
+    # while(True):
+    m = ws.recv()
+    print(json.loads(m))
+    # time.sleep(5)
+    # ws.send(m)
 
 except Exception as e:
     print(f"Произошла ошибка при подключении: {e}")

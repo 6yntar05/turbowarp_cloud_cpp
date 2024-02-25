@@ -1,5 +1,7 @@
 #include "session/server.hpp"
 
+#include "session/turbowarp/json_parser.hpp"
+
 namespace session {
 
 server::server(server::config_t config) : config(std::move(config)) {}
@@ -32,10 +34,11 @@ session::handlers server::session_handlers() {
     return session::handlers{
         .on_accept =
             decltype(session::handlers::on_accept){
-                .success = [](auto context) {
-                    //context
-                    context.owner->read();
-                },
+                .success =
+                    [](auto context) {
+                        // context
+                        context.owner->read();
+                    },
                 .failure = default_handlers::just_say_arg<beast::error_code>("accept error: "),
             },
 
@@ -43,8 +46,19 @@ session::handlers server::session_handlers() {
             decltype(session::handlers::on_read){
                 .success =
                     [](auto context, auto bytes_transferred, auto data) {
-                        spdlog::debug("read data: {}", std::string(static_cast<const char*>(data.data()), data.size()));
-                        context.owner->send(data);
+                        auto s_data =
+                            std::string(static_cast<const char*>(data.data()), data.size());
+                        spdlog::debug("read data: {}", s_data);
+
+                        auto answer = turbowarp::JsonParser::analize_data(s_data);
+
+                        if (answer.is_type(turbowarp::Type::Some) ||
+                            answer.is_type(turbowarp::Type::Error)) {
+                            context.owner->send(answer.get());
+                        }
+                        if (answer.is_type(turbowarp::Type::Error)) {
+                            /* drop connection */
+                        }
                     },
                 .failure = default_handlers::just_say_arg<beast::error_code>("read error: "),
             },
@@ -54,7 +68,9 @@ session::handlers server::session_handlers() {
                 .success =
                     [](auto context, auto bytes_transferred) {
                         asio::const_buffer data = context.owner->read();
-                        spdlog::debug("send data: {}", std::string(static_cast<const char*>(data.data()), data.size()));
+                        spdlog::debug(
+                            "send data: {}",
+                            std::string(static_cast<const char*>(data.data()), data.size()));
                     },
                 .failure = default_handlers::just_say_arg<beast::error_code>("write error: "),
             },

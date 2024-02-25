@@ -5,6 +5,7 @@
 #include "session/server.hpp"
 #include "session/server_builder.hpp"
 #include "session/standard_headers.hpp"
+#include "session/turbowarp/methods.hpp"
 #include "utils/utils.hpp"
 
 int main(int argc, char* argv[]) {
@@ -21,6 +22,8 @@ int main(int argc, char* argv[]) {
         spdlog::debug("DBUsername: {}", options.dbusername);
         spdlog::debug("DBPassowrd: {}", options.dbpassword);
     }
+
+    turbowarp::method::AvailableMethods::base_init();
 
     boost::asio::io_context io_context(1);
     session::server::server_ptr server = session::build_server(
