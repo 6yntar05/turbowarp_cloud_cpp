@@ -1,7 +1,9 @@
 #include <spdlog/spdlog.h>
 
 #include <cstdlib>
+#include <memory>
 
+#include "db/db.hpp"
 #include "session/server.hpp"
 #include "session/server_builder.hpp"
 #include "session/standard_headers.hpp"
@@ -22,6 +24,12 @@ int main(int argc, char* argv[]) {
         spdlog::debug("DBUsername: {}", options.dbusername);
         spdlog::debug("DBPassowrd: {}", options.dbpassword);
     }
+
+    std::unique_ptr<db::db> db_connection = std::make_unique<db::db>(
+        db::backends::postgres, options.dbusername, options.dbpassword, options.dbdatabase,
+        db::addr{options.dbhost, std::to_string(options.dbport)});
+    db_connection->connect();   // pass to server
+                                // and create write methods
 
     turbowarp::method::AvailableMethods::base_init();
 

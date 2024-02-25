@@ -13,16 +13,19 @@ try:
     ws.connect(sys.argv[1])
     print("Подключено к серверу")
 
-    # data = json.dumps(['foo', {'bar': ('baz', None, 1.0, 2)}])
-    # data = json.dumps({'method': 'handshake', 'project_id': 'qwe', 'user': 'asd'})
-    data = json.dumps({'method': 'handshake', 'asd': 'qwe', 'user': 'asd'})
-    # data = "asd"
+    data = json.dumps({'method': 'handshake', 'project_id': '228228', 'user': 'asd'})
     ws.send(data)
-    # while(True):
     m = ws.recv()
     print(json.loads(m))
-    # time.sleep(5)
-    # ws.send(m)
+    time.sleep(1)
+    
+    while(True):
+        data = json.dumps({'method': 'set', 'name': 'setName', 'value': 'setValue'})
+        ws.send(data)
+        m = ws.recv()
+        print(json.loads(m))
+        time.sleep(1)
+    
 
 except Exception as e:
     print(f"Произошла ошибка при подключении: {e}")
