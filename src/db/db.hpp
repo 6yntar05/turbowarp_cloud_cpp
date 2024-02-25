@@ -115,6 +115,19 @@ public:
 
     void serviceWrite(dataRows::service::row);
     std::vector<dataRows::service::row> serviceRead(size_t count);
+
+    /// TODO:
+    // - table <project-id>:
+    //  - columns (username:key:value)
+    //   - row...
+    //   - row...
+
+    /// So, TODO methods:
+    // projectTable GetTable()...
+    //  > projectTable: set(user, key, value) / get / delete...
+
+    /// Or temporary short view: ignore projectid:
+    // set(user,key,value) / get / delete
 };
 
 }  // namespace db
