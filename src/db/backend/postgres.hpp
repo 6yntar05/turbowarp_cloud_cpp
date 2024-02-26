@@ -2,6 +2,8 @@
 
 #include <pqxx/pqxx>
 #include <string>
+#include <string_view>
+#include <any>
 
 #include "db/db.hpp"
 
@@ -25,11 +27,9 @@ public:
     void setup() override;
     size_t getRowsCount(std::string table) override;
 
-    void serviceWrite(dataRows::service::row) override;
-    std::vector<dataRows::service::row> serviceRead(size_t count) override;
-
-    void journalWrite(dataRows::journal::row) override;
-    std::vector<dataRows::journal::row> journalRead(size_t count) override;
+    void set( const dataRows::turbowarp::row row ) override;
+    std::string get( const dataRows::turbowarp::row row ) override;
+    void del( const dataRows::turbowarp::row row ) override;
 };
 
 }  // namespace postgres

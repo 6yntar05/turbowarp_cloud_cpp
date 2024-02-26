@@ -51,8 +51,8 @@ void impl::close() { this->C->close(); }
 
 void impl::setup() {
     std::vector<std::pair<std::string, std::string>> iter = {
-        {"service", dataRows::service::postgresString},
-        {"journal", dataRows::journal::postgresString}};
+        {"turbowarp", dataRows::turbowarp::postgresString}
+    };
 
     for (auto& i : iter) {
         pqxx::work W{*C};
@@ -69,12 +69,11 @@ void impl::setup() {
         }
     }
 
-    this->C->prepare("serviceWrite", "INSERT INTO service " +
-                                         dataRows::genNamesVec(dataRows::service::postgresString) +
-                                         " VALUES ($1, $2);");
-    this->C->prepare("journalWrite", "INSERT INTO journal " +
-                                         dataRows::genNamesVec(dataRows::journal::postgresString) +
+    this->C->prepare("turbowarpWrite", "INSERT INTO turbowarp " +
+                                         dataRows::genNamesVec(dataRows::turbowarp::postgresString) +
                                          " VALUES ($1, $2, $3);");
+    this->C->prepare("turbowarpRead", "SELECT value FROM turbowarp WHERE user = $1 AND key = $2;");
+    this->C->prepare("turbowarpDelete", "DELETE FROM turbowarp WHERE user = $1 AND key = $2;");
 }
 
 size_t impl::getRowsCount(std::string table) {
@@ -84,32 +83,25 @@ size_t impl::getRowsCount(std::string table) {
 
 using namespace dataRows;
 
-// Service table:
-void impl::serviceWrite(service::row dataRow) {
-    pqxx::work W{*C};
-    W.exec_prepared("serviceWrite", std::to_string(static_cast<int>(dataRow.type)), dataRow.data);
+void impl::set( const dataRows::turbowarp::row row ) {
+    pqxx::work W{*this->C};
+    W.exec_prepared("turbowarpWrite", row.user, row.key, row.value );
     W.commit();
 }
-std::vector<service::row> impl::serviceRead(size_t count) {
-    std::vector<service::row> ret;
-    pqxx::work W{*C};
-    auto response = W.exec_n(count, "SELECT * FROM service LIMIT " + std::to_string(count) + ";");
-
-    for (auto i : response) {
-        service::row row;
-        row.id = std::stoul(i.at(0).c_str());
-        row.type = static_cast<service::types>(i.at(1).get<int>().value());
-        row.data = i.at(2).c_str();
-        ret.push_back(row);
-    }
-    return ret;
-}
-
-// Journal table:
-void impl::journalWrite(journal::row dataRow) {
+std::string postgres::impl::get(const dataRows::turbowarp::row row) {
     pqxx::work W{*this->C};
-    W.exec_prepared("journalWrite", dataRow.datetime, dataRow.metadata,
-                    pqxx::binary_cast(dataRow.image));
+    pqxx::result result = W.exec_prepared("turbowarpRead", row.user, row.key);
+
+    if (!result.empty()) {
+        return result[0]["value"].as<std::string>();
+    }
+
+    // If value not found
+    return "";
+}
+void postgres::impl::del(const dataRows::turbowarp::row row) {
+    pqxx::work W{*this->C};
+    W.exec_prepared("turbowarpDelete", row.user, row.key);
     W.commit();
 }
 
@@ -122,27 +114,6 @@ std::string hexToASCII(std::string hex) {
         ascii += ch;
     }
     return ascii;
-}
-
-std::vector<journal::row> impl::journalRead(size_t count) {
-    std::vector<journal::row> ret;
-    pqxx::work W{*C};
-    auto response =
-        W.exec_n(count, "SELECT * FROM journal LIMIT " + W.esc(std::to_string(count)) + ";");
-
-    for (auto i : response) {
-        journal::row row;
-        row.id = std::stoul(i.at(0).c_str());
-        row.datetime = i.at(1).c_str();
-        row.metadata = i.at(2).c_str();
-        auto x = hexToASCII(i.at(3).c_str());
-
-        std::vector<unsigned char> y{x.c_str(), x.c_str() + x.size()};
-        row.image = y;
-        ret.push_back(row);
-    }
-
-    return ret;
 }
 
 }  // namespace postgres

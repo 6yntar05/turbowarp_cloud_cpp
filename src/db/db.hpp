@@ -2,6 +2,7 @@
 
 #include <spdlog/spdlog.h>
 
+#include <any>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -35,40 +36,21 @@ credetials getDefaults(backends::available backend);
 
 namespace dataRows {
 
-// template <typename T> constexpr std::string genDataString(::db::backends::available backend, T
-// dataStruct) { return {}; }
-
-namespace service {
-enum types { exceptionEvent = 0, connectEvent = 1, disconnectEvent = 2, broadcastEvent = 3 };
-
+namespace turbowarp {
 struct row {
     uint32_t id = 0;  // will be generated automaticly
-    types type = exceptionEvent;
-    std::string data = {};
+    std::string_view user;
+    std::string_view key;
+    std::string_view value;
 };
 const std::string postgresString =
     "id int GENERATED ALWAYS AS IDENTITY,"
-    "type smallint,"
-    "data varchar (255) ";
+    "user varchar (32),"
+    "key varchar (255),"
+    "value varchar (10240)";
 
 const std::string sqliteString = "; DROP TABLE *;";  // We do a little trolling...
-}  // namespace service
-
-namespace journal {
-struct row {
-    uint32_t id = 0;  // will be generated automaticly
-    std::string datetime;
-    std::string metadata;
-    std::vector<unsigned char> image;  // ((((((((((((((
-};
-const std::string postgresString =
-    "id int GENERATED ALWAYS AS IDENTITY,"
-    "datetime varchar (32),"
-    "metadata varchar (255),"
-    "image bytea DEFAULT NULL";
-
-const std::string sqliteString = "; DROP TABLE *;";  // We do a little trolling...
-}  // namespace journal
+}  // namespace turbowarp
 
 std::string genNamesVec(std::string source, bool ignoreFirst = true);
 
@@ -80,18 +62,26 @@ public:
     virtual ~impl() = default;
     virtual void close(){};
     virtual void setup(){};
-
-    // Service table
-    virtual void serviceWrite(dataRows::service::row){};
-    virtual std::vector<dataRows::service::row> serviceRead(size_t count) { return {}; };
-
-    // Journal table
-    virtual void journalWrite(dataRows::journal::row i) {
-        spdlog::info("[ {} | {} | {} | {} ]", std::to_string(i.id), i.datetime, i.metadata, i.image.size());
-    };
-    virtual std::vector<dataRows::journal::row> journalRead(size_t count) { return {}; };
-
     virtual size_t getRowsCount(std::string table) { return {}; };
+
+    /// TODO:
+    // - table <project-id>:
+    //  - columns (username:key:value)
+    //   - row...
+    //   - row...
+
+    /// So, TODO methods:
+    // projectTable GetTable()...
+    //  > projectTable: set(user, key, value) / get / delete...
+
+    /// Or temporary short view: ignore projectid:
+    // set(user,key,value) / get / delete
+    virtual void set( const dataRows::turbowarp::row row ) {};
+    virtual std::string get( const dataRows::turbowarp::row row ) { return {}; };
+    virtual void del( const dataRows::turbowarp::row row ) {};
+
+    /// TODO 2:
+    // - mutex on db
 };
 
 // Main interface
@@ -110,24 +100,9 @@ public:
 
     size_t getRowsCount(std::string table);
 
-    void journalWrite(dataRows::journal::row);
-    std::vector<dataRows::journal::row> journalRead(size_t count);
-
-    void serviceWrite(dataRows::service::row);
-    std::vector<dataRows::service::row> serviceRead(size_t count);
-
-    /// TODO:
-    // - table <project-id>:
-    //  - columns (username:key:value)
-    //   - row...
-    //   - row...
-
-    /// So, TODO methods:
-    // projectTable GetTable()...
-    //  > projectTable: set(user, key, value) / get / delete...
-
-    /// Or temporary short view: ignore projectid:
-    // set(user,key,value) / get / delete
+    void set( const dataRows::turbowarp::row row );
+    std::string get( const dataRows::turbowarp::row row );
+    void del( const dataRows::turbowarp::row row );
 };
 
 }  // namespace db

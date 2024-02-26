@@ -75,14 +75,14 @@ void db::disconnect() { this->backend->close(); }
 void db::setup() { this->backend->setup(); }
 size_t db::getRowsCount(std::string table) { return this->backend->getRowsCount(table); }
 
-void db::journalWrite(dataRows::journal::row arg) { this->backend->journalWrite(arg); }
-std::vector<dataRows::journal::row> db::journalRead(size_t count) {
-    return this->backend->journalRead(count);
+void db::set( const dataRows::turbowarp::row row ) {
+    this->backend->set(std::move(row));
 }
-
-void db::serviceWrite(dataRows::service::row arg) { this->backend->serviceWrite(arg); }
-std::vector<dataRows::service::row> db::serviceRead(size_t count) {
-    return this->backend->serviceRead(count);
+std::string db::get( const dataRows::turbowarp::row row ) {
+    return this->backend->get(std::move(row));
+}
+void db::del( const dataRows::turbowarp::row row ) {
+    this->backend->del(std::move(row));
 }
 
 std::string dataRows::genNamesVec(std::string source, bool ignoreFirst) {
