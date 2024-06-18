@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  server:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "443:443"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: example
+      DB_NAME: postgres
+    command: [
+      "--host", "0.0.0.0",
+      "--port", "443",
+      "--dbhost", "db",
+      "--dbport", "5432",
+      "--dbusername", "postgres",
+      "--dbpassword", "example",
+      "--dbname", "postgres"
+    ]
+    #volumes:
+    #  - ./cert.pem:/app/cert
+    #  - ./privkey.pem:/app/privkey
+
+volumes:
+  db_data:

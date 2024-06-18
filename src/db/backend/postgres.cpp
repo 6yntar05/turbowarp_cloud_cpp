@@ -30,18 +30,23 @@ credetials getDefaults() {
 }
 
 impl::impl(const std::string user, const std::string passwd, const std::string dbname, addr addr) {
-    try {
-        this->C = std::make_unique<pqxx::connection>("dbname = " + dbname + " user = " + user +
-                                                     " password = " + passwd +
-                                                     " host = " + addr.ip + " port = " + addr.port);
-        if (!this->C->is_open()) {
-            spdlog::error("Can't open database");
-            return;
+    bool isInited = false;
+    while (!isInited) {
+        try {
+            this->C = std::make_unique<pqxx::connection>("dbname = " + dbname + " user = " + user +
+                                                        " password = " + passwd +
+                                                        " host = " + addr.ip + " port = " + addr.port);
+            if (!this->C->is_open()) {
+                spdlog::error("Can't open database");
+                return;
+            }
+            spdlog::info("Opened database successfully: " + static_cast<std::string>(this->C->dbname()));
+            isInited = true;
+        } catch (const std::exception& e) {
+            spdlog::error("Exception: {}", e.what());
+            spdlog::error("Retrying in 5 sec...");
+            std::this_thread::sleep_for( std::chrono::seconds(5) );
         }
-        spdlog::info("Opened database successfully: " + static_cast<std::string>(this->C->dbname()));
-
-    } catch (const std::exception& e) {
-        spdlog::error("Exception: {}", e.what());
     }
 }
 

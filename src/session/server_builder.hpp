@@ -13,8 +13,10 @@ void configure_ssl(ssl::context &ctx, const std::string& chain_file, const std::
                     boost::asio::ssl::context::no_sslv2 |
                     boost::asio::ssl::context::single_dh_use);
 
+    std::cerr << "Using chain file: " << chain_file;
     ctx.use_certificate_chain_file(chain_file);
 
+    std::cerr << "Using rivkey file: " << privkey_file;
     ctx.use_private_key_file(privkey_file, boost::asio::ssl::context::file_format::pem);
 }
 
